@@ -1,4 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
+import cgi ###common gateway interface###
 
 tasklist = ['Task 1', 'Task 2', 'Task 3']
 
@@ -36,6 +37,17 @@ class requestHandler(BaseHTTPRequestHandler):
             output += '</body></html>'
 
             self.wfile.write(output.encode())
+    def do_POST(self):
+        if self.path.endswith('/new'):
+            ctype, pdict = cgi.parse_header(self.headers.get('content-type')) ###ctype scans POST and = multipart/form-data | pdict will be Boundary Key from form-data to separate values in the form###
+            if ctype == 'multipart/form-data':
+                fields = cgi.parse_multipart(self.rfile, pdict)
+                new_task = fields.get('task')
+                tasklist.append(new_task)
+            self.send_response(301) ###redirect request###
+            self.send_header('content-type', 'text/html')
+            self.send_header('Location', '/tasklist')
+            self.end_headers()
 
 def main():
     PORT = 9000
