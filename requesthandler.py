@@ -40,10 +40,14 @@ class requestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path.endswith('/new'):
             ctype, pdict = cgi.parse_header(self.headers.get('content-type')) ###ctype scans POST and = multipart/form-data | pdict will be Boundary Key from form-data to separate values in the form###
+            content_len = int(self.headers.get('Content-Length'))
+            pdict['boundary'] = bytes(pdict['boundary'], "utf-8")
+            pdict['CONTENT-LENGTH'] = content_len
             if ctype == 'multipart/form-data':
                 fields = cgi.parse_multipart(self.rfile, pdict)
                 new_task = fields.get('task')
                 tasklist.append(new_task)
+
             self.send_response(301) ###redirect request###
             self.send_header('content-type', 'text/html')
             self.send_header('Location', '/tasklist')
