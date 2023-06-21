@@ -19,6 +19,23 @@ class requestHandler(BaseHTTPRequestHandler):
             
             output += '</body></html>'
             self.wfile.write(output.encode())
+        
+        if self.path.endswith('/new'):
+            self.send_response(200)
+            self.send_header('content-type', 'text/html')
+            self.end_headers()
+
+            output = ''
+            output += '<html><body>'
+            output += '<h1>Add New Task</h1>'
+
+            output += '<form method="POST" enctype="multipart/form-data action="/tasklist/new">'
+            output += '<input name="task" type="text" placeholder="Add New Task">'
+            output += '<input type="submit" value="Add">'
+            output += '</form>'
+            output += '</body></html>'
+
+            self.wfile.write(output.encode())
 
 def main():
     PORT = 9000
